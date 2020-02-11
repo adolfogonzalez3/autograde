@@ -134,10 +134,12 @@ def test_cpp_program_collect(tmp_path, simple_source, simple_program):
     assert cpp_program.source_files == source_files
     assert cpp_program.entry_point == components.CppSource(simple_program)
 
+
 def test_cpp_program_compile(tmp_path, simple_source, simple_program):
     """Tests CppProgram compile method."""
     cpp_program = components.CppProgram(tmp_path)
     cpp_program.compile()
     for path in Path(tmp_path).iterdir():
         print(path)
-    assert cpp_program.entry_point.path.with_suffix('.exe').exists()
+    assert cpp_program.executable is not None
+    assert cpp_program.executable.exists()

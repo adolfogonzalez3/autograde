@@ -63,6 +63,7 @@ class Source(object):
         """Use the underlying path object's __lt__ method."""
         return self.path.__lt__(other)
 
+
 class Program(object):
     """Represents that state of a program."""
 

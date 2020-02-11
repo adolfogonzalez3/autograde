@@ -100,6 +100,7 @@ class CppProgram(Program):
 
     def __init__(self, root_path, path_to_entry_point=None):
         super().__init__(root_path, path_to_entry_point)
+        self.executable = None
         for source_file in self.source_files:
             if source_file.is_entry_point():
                 self.entry_point = source_file
@@ -142,18 +143,36 @@ class CppProgram(Program):
 
     def compile(self, args=None, kwargs=None):
         """See base class."""
+        if self.entry_point is None:
+            return False
         with (self.root_path / 'SConstruct').open('wt') as construct:
-            construct.write(
-                f"Program(r'{str(self.entry_point.path)}')"
-            )
-        subprocess.run(
+            relative_path = self.entry_point.path.relative_to(self.root_path)
+            construct.write(f"Program(r'{str(relative_path)}')")
+        proc_status = subprocess.run(
             ['scons'], shell=True, cwd=self.root_path, capture_output=True
         )
+        match = re.search(r"\s*/OUT:(\S+)\s*", proc_status.stdout.decode())
+        if match is not None:
+            self.executable = self.root_path / match.group(1)
+        print(proc_status.stdout)
+        return proc_status.returncode == 0
 
     def clean(self):
         """See base class."""
-
+        subprocess.run(
+            ['scons', '--clean'], shell=True, cwd=self.root_path,
+            capture_output=True
+        )
 
     def execute(self, args=None, kwargs=None):
         """See base class."""
-        return
+        if self.executable is None:
+            self.compile()
+            if self.executable is None:
+                return False
+        proc_status = subprocess.run(
+            [str(self.executable)], cwd=self.root_path,
+            shell=True
+        )
+        return proc_status.returncode == 0
+
