@@ -3,10 +3,8 @@
 import re
 from os import PathLike
 from typing import List, Tuple, Union, Optional
-import subprocess
 
-from autograde.components import Program, Source
-from autograde.tools.result import Result
+from autograde.components.program import Program, Source
 
 
 def get_functions(source_code: str) -> List[Tuple[str, str, Tuple[str, ...]]]:
@@ -107,50 +105,3 @@ class CppProgram(Program):
     def source_type(self):
         """See base class."""
         return CppSource
-
-    def compile(self, target_path) -> Result:
-        """See base class."""
-        if self.entry_point is None:
-            return Result("", "", 1)
-        if self.entry_point.path.with_suffix('.exe').exists():
-            self.executable = self.entry_point.path.with_suffix('.exe')
-            return Result("", "", 0)
-        with (target_path / 'SConstruct').open('wt') as construct:
-            absolute_path = self.entry_point.path.resolve()
-            construct.write(
-                f"Program(r'{absolute_path.with_suffix('.exe').name}',"
-                f"r'{str(absolute_path)}')"
-            )
-        proc_status = subprocess.run(
-            ['scons'], shell=True, cwd=target_path, capture_output=True
-        )
-        match = re.search(r"\s*/OUT:(\S+)\s*", proc_status.stdout.decode())
-        if match is not None:
-            self.executable = target_path / match.group(1)
-        return Result(
-            proc_status.stdout.decode(), proc_status.stderr.decode(),
-            proc_status.returncode)
-
-    def clean(self, target_path) -> Result:
-        """See base class."""
-        proc_status = subprocess.run(
-            ['scons', '--clean'], shell=True, cwd=target_path,
-            capture_output=True
-        )
-        return Result(
-            proc_status.stdout, proc_status.stderr, proc_status.returncode)
-
-    def execute(self, proc_input: Optional[str] = None) -> Result:
-        """See base class."""
-        if self.executable is None:
-            self.compile()
-            if self.executable is None:
-                return Result("", "", 1)
-        proc_status = subprocess.run(
-            [str(self.executable.resolve())],
-            cwd=self.root_path, capture_output=True,
-            input=proc_input, text=True
-        )
-        return Result(
-            proc_status.stdout, proc_status.stderr,
-            proc_status.returncode)

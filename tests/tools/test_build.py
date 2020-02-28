@@ -21,16 +21,17 @@ def test_compile_cpp(tmp_path, simple_program):
     assert bool(result)
 
 
-def ttest_cpp_program_clean(tmp_path, simple_program):
+def test_cpp_program_clean(tmp_path, simple_program):
     """Tests CppProgram clean method."""
     tmp_path = Path(tmp_path)
     cpp_program = components.CppProgram(tmp_path)
     cpp_program.collect_source()
     cpp_program.set_entry_point()
-    build_tools.compile_cpp(cpp_program, target_path=tmp_path)
+    compile_result = build_tools.compile_cpp(cpp_program, target_path=tmp_path)
+    clean_result = build_tools.clean_cpp(tmp_path)
+    print(compile_result)
     for path in tmp_path.iterdir():
         print(path)
-    for source in cpp_program.source_files:
-        print(source)
+    print(clean_result)
     assert not list(tmp_path.rglob('*.o'))
     assert not list(tmp_path.rglob('*.obj'))

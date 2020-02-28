@@ -1,9 +1,8 @@
 """Module that abstracts components of programs."""
-from collections import namedtuple
 from pathlib import Path
 from os import PathLike
 from abc import abstractmethod
-from typing import List, Union, Optional, Set, Tuple
+from typing import Union, Optional, Set, Tuple
 
 
 class Source(object):
@@ -63,7 +62,7 @@ class Program(object):
             self.entry_point = self.source_type(source_file)
         else:
             self.entry_point = next(
-                sf for sf in self.source_files if sf.is_entry_point()
+                (sf for sf in self.source_files if sf.is_entry_point()), None
             )
 
     def add_build_path(self, build_path: PathLike):
@@ -105,10 +104,3 @@ class Program(object):
     @abstractmethod
     def source_type(self):
         """Returns the Source subclass for program type."""
-
-    @abstractmethod
-    def compile(self):
-        """Compile the program."""
-    @abstractmethod
-    def execute(self):
-        """Execute the program."""

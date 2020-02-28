@@ -1,11 +1,14 @@
 """Module that contains the Result class."""
 
 from collections import namedtuple
-from typing import List, Tuple, Union, Optional
+from typing import List
 
 _Result = namedtuple("_Result", ["stdout", "stderr", "return_code"])
 _CompileResult = namedtuple(
     "_CompileResult", ["executable", "stdout", "stderr", "return_code"]
+)
+_ExecuteResult = namedtuple(
+    "_ExecuteResult", ["stdout", "stderr", "return_code"]
 )
 
 
@@ -51,6 +54,14 @@ class CompileResult(_CompileResult):
     def is_warning(self) -> bool:
         """Return True if check found a warning."""
         return not self.get_warning()
+
+    def __bool__(self) -> bool:
+        """Return True if no errors or warngins."""
+        return self.return_code == 0
+
+
+class ExecuteResult(_ExecuteResult):
+    __slots__ = ()
 
     def __bool__(self) -> bool:
         """Return True if no errors or warngins."""
