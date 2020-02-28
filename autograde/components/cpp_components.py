@@ -6,6 +6,7 @@ from typing import List, Tuple, Union, Optional
 import subprocess
 
 from autograde.components import Program, Source
+from autograde.tools.result import Result
 
 
 def get_functions(source_code: str) -> List[Tuple[str, str, Tuple[str, ...]]]:
@@ -18,7 +19,7 @@ def get_functions(source_code: str) -> List[Tuple[str, str, Tuple[str, ...]]]:
     """
     function_pattern = re.compile(
         r'([a-z|A-Z|0-9|_|<|>|\*]+?)\s+?'  # Represents the return type
-        r'(\w+?)'  # Represents the function name
+        r'(\w+?)\s*'  # Represents the function name
         r'\(\s*(.*?)\s*\)'  # represents the function arguments
         r'\s*?{.*?}',  # Represents the body of the function
         flags=re.DOTALL
@@ -98,13 +99,6 @@ class CppSource(Source):
 class CppProgram(Program):
     """A representation of a C++ program."""
 
-    def __init__(self, root_path, path_to_entry_point=None):
-        super().__init__(root_path, path_to_entry_point)
-        self.executable = None
-        for source_file in self.source_files:
-            if source_file.is_entry_point():
-                self.entry_point = source_file
-
     def get_extensions(self):
         """See base class."""
         return ('.cpp', '.h')
@@ -114,65 +108,49 @@ class CppProgram(Program):
         """See base class."""
         return CppSource
 
-    def check(self):
-        """See base class."""
-        results = []
-        main_pattern = re.compile(r'int\s+main')
-        header_pattern = re.compile(
-            # r'/\*+.?\s+'
-            r'//\s*class:\s*.+?\s+'
-            r'//\s*section:\s*.+?\s+'
-            r'//\s*semester:\s*.+?\s+'
-            r'//\s*lab:\s*.+?\s+'
-            r'(//\s*name:\s*.+?\s+)+'
-            # r'.?\*+/'
-        )
-        for file_path in self.source_files:
-            has_main_flag = False
-            with file_path.open('rt') as source_stream:
-                source_code = ' '.join(line for line in source_stream)
-            if main_pattern.search(source_code):
-                has_main_flag = True
-            header = header_pattern.search(source_code.lower())
-            if header and self.header is None:
-                self.header = header
-            results.append(
-                CheckTuple(file_path, has_main_flag)
-            )
-        return results
-
-    def compile(self, args=None, kwargs=None):
+    def compile(self, target_path) -> Result:
         """See base class."""
         if self.entry_point is None:
-            return False
-        with (self.root_path / 'SConstruct').open('wt') as construct:
-            relative_path = self.entry_point.path.relative_to(self.root_path)
-            construct.write(f"Program(r'{str(relative_path)}')")
+            return Result("", "", 1)
+        if self.entry_point.path.with_suffix('.exe').exists():
+            self.executable = self.entry_point.path.with_suffix('.exe')
+            return Result("", "", 0)
+        with (target_path / 'SConstruct').open('wt') as construct:
+            absolute_path = self.entry_point.path.resolve()
+            construct.write(
+                f"Program(r'{absolute_path.with_suffix('.exe').name}',"
+                f"r'{str(absolute_path)}')"
+            )
         proc_status = subprocess.run(
-            ['scons'], shell=True, cwd=self.root_path, capture_output=True
+            ['scons'], shell=True, cwd=target_path, capture_output=True
         )
         match = re.search(r"\s*/OUT:(\S+)\s*", proc_status.stdout.decode())
         if match is not None:
-            self.executable = self.root_path / match.group(1)
-        print(proc_status.stdout)
-        return proc_status.returncode == 0
+            self.executable = target_path / match.group(1)
+        return Result(
+            proc_status.stdout.decode(), proc_status.stderr.decode(),
+            proc_status.returncode)
 
-    def clean(self):
+    def clean(self, target_path) -> Result:
         """See base class."""
-        subprocess.run(
-            ['scons', '--clean'], shell=True, cwd=self.root_path,
+        proc_status = subprocess.run(
+            ['scons', '--clean'], shell=True, cwd=target_path,
             capture_output=True
         )
+        return Result(
+            proc_status.stdout, proc_status.stderr, proc_status.returncode)
 
-    def execute(self, args=None, kwargs=None):
+    def execute(self, proc_input: Optional[str] = None) -> Result:
         """See base class."""
         if self.executable is None:
             self.compile()
             if self.executable is None:
-                return False
+                return Result("", "", 1)
         proc_status = subprocess.run(
-            [str(self.executable)], cwd=self.root_path,
-            shell=True
+            [str(self.executable.resolve())],
+            cwd=self.root_path, capture_output=True,
+            input=proc_input, text=True
         )
-        return proc_status.returncode == 0
-
+        return Result(
+            proc_status.stdout, proc_status.stderr,
+            proc_status.returncode)
