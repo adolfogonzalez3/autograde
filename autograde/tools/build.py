@@ -23,7 +23,7 @@ def create_scons(program: Program, target_dir: PathLike) -> Tuple[Path, Path]:
     target_dir = Path(target_dir)
     build_info_file = target_dir / 'build_info.json'
     other_sources = program.source_files - {program.entry_point}
-    dependencies = ", ".join(str(sf.path.resolve()) for sf in other_sources)
+    dependencies = [sf.path.resolve() for sf in other_sources]
     build_info = {
         "source_files": dependencies,
         "executable_path": None
