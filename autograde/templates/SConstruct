@@ -11,5 +11,7 @@ object_files = [
     for source_file in build_info["source_files"]
 ]
 
+print(object_files)
+
 Program(build_info["executable_path"], object_files)
 
