@@ -74,7 +74,8 @@ def clean_cpp(target_path: PathLike):
         target_path: The path to clean of build files.
     """
     proc_status = subprocess.run(
-        ['scons', '-c'], shell=True, cwd=target_path, capture_output=True
+        ['scons', '-c'], shell=True, cwd=target_path, capture_output=True,
+        text=True
     )
     return Result(
         proc_status.stdout, proc_status.stderr, proc_status.returncode

@@ -4,6 +4,7 @@ from pathlib import Path
 
 from autograde import CppProgram
 from autograde.tools import compile_cpp, execute_program
+from autograde.tools.container import compile_run_cpp
 
 
 def get_args():
@@ -26,6 +27,8 @@ def main():
         program = CppProgram(student_path)
         program.collect_source()
         program.set_entry_point()
+        compile_run_cpp(program)
+        continue
         compile_result = compile_cpp(program, student_path)
         print("STDOUT")
         print(compile_result.stdout)

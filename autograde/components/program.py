@@ -81,7 +81,6 @@ class Program(object):
             source_file: A source file.
         """
         self.source_files.add(source_file)
-        return self
 
     def collect_source(self):
         """Collect all source files from build paths. """
