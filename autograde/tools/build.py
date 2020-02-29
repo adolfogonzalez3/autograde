@@ -60,6 +60,7 @@ def compile_cpp(
     if program.entry_point is not None:
         executable = target_path / program.entry_point.path.name
         executable = executable.with_suffix(".exe")
+        print(executable)
     create_scons(program, target_path)
     proc_status = subprocess.run(
         ['scons'], shell=True, cwd=target_path, capture_output=True, text=True
