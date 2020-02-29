@@ -34,16 +34,17 @@ def main():
         #clean_cpp(student_path)
         #compile_result = compile_cpp(program, student_path)
         print("Compiling...")
-        print("STDOUT")
-        print(compile_result.stdout)
-        print("STDERR")
-        print(compile_result.stderr)
-        print(compile_result.executable)
-        print("Executing...")
-        print("STDOUT:")
-        print(execute_result.stdout)
-        print("STDERR")
-        print(execute_result.stderr)
+        if compile_result is not None:
+            print("STDOUT")
+            print(compile_result.stdout)
+            print("STDERR")
+            print(compile_result.stderr)
+        if execute_result is not None:
+            print("Executing...")
+            print("STDOUT:")
+            print(execute_result.stdout)
+            print("STDERR")
+            print(execute_result.stderr)
 
         if compile_result.executable is not None:
             print("Executing...")
