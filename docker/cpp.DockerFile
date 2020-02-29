@@ -11,4 +11,4 @@ RUN mkdir /build/
 WORKDIR /home/
 COPY run.py .
 
-#ENTRYPOINT ["/usr/bin/python3", "run.py"]
+ENTRYPOINT ["/usr/bin/python3", "run.py"]

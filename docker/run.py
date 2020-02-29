@@ -20,6 +20,7 @@ def main():
     target_path = Path()
     build_path = Path("/", "build")
     build_info = json.loads(args.build_info)
+    print(build_info)
     program = CppProgram(*build_info["source_files"])
     program.set_entry_point(build_info["entry_point"])
     print("Compiling...")
