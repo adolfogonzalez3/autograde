@@ -1,4 +1,5 @@
 """A script for running the autograder."""
+import sys
 import json
 import argparse
 from pathlib import Path
@@ -20,30 +21,29 @@ def main():
     target_path = Path()
     build_path = Path("/", "build")
     build_info = json.loads(args.build_info)
-    print(build_info)
     program = CppProgram(*build_info["source_files"])
     program.set_entry_point(build_info["entry_point"])
-    print("Compiling...")
     compile_result = compile_cpp(program, target_path)
 
-    print("STDOUT")
-    print(compile_result.stdout)
-    print("STDERR")
-    print(compile_result.stderr)
-    print(compile_result)
+    result = {
+        "compile": {
+            "stdout": compile_result.stdout,
+            "stderr": compile_result.stderr,
+            "return_code": compile_result.return_code
+        },
+        "execute": None
+    }
     if compile_result.executable is not None:
-        print("Executing...")
         execute_result = execute_program(
             compile_result.executable, cwd=target_path,
             program_input=build_info["program_input"])
-        print("STDOUT:")
-        print(execute_result.stdout)
-        print("STDERR")
-        print(execute_result.stderr)
-    else:
-        print("Compiling Unsuccessful")
+        result["execute"] = {
+            "stdout": execute_result.stdout,
+            "stderr": execute_result.stderr,
+            "return_code": execute_result.return_code
+        }
+    print(json.dumps(result))
 
 
 if __name__ == "__main__":
-    print("Something")
     main()

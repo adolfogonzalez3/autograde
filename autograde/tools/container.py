@@ -39,18 +39,12 @@ def compile_run_cpp(
         ("-v", f"{bpath.resolve()}:{mpath}:ro")
         for bpath, mpath in build_path_map.items()
     ]
-    command = [
-        "docker", "run", "--rm", "-i", "-a", "stdout", "-a", "stderr",
-        "-a", "stdin"
-    ]
+    command = ["docker", "run", "--rm"]
     command.extend(chain.from_iterable(volumes))
     command.append("cpp-container")
     command.append(json.dumps(build_info))
-    print(command)
     proc_status = subprocess.run(
         command, capture_output=True, text=True
     )
-    print("STDOUT")
-    print(proc_status.stdout)
-    print("STDERR")
-    print(proc_status.stderr)
+    result = json.loads(proc_status.stdout)
+    print(result)
