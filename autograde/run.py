@@ -29,15 +29,22 @@ def main():
         program.collect_source()
         program.set_entry_point()
         print("Entry Point: ", program.entry_point)
-        compile_run_cpp(program)
-        continue
-        clean_cpp(student_path)
-        compile_result = compile_cpp(program, student_path)
+        compile_result, execute_result = compile_run_cpp(program)
+        #continue
+        #clean_cpp(student_path)
+        #compile_result = compile_cpp(program, student_path)
+        print("Compiling...")
         print("STDOUT")
         print(compile_result.stdout)
         print("STDERR")
         print(compile_result.stderr)
         print(compile_result.executable)
+        print("Executing...")
+        print("STDOUT:")
+        print(execute_result.stdout)
+        print("STDERR")
+        print(execute_result.stderr)
+
         if compile_result.executable is not None:
             print("Executing...")
             execute_result = execute_program(

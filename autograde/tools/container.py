@@ -5,12 +5,14 @@ import json
 import subprocess
 from itertools import chain
 from autograde.components.cpp_components import CppProgram
+from autograde.tools.result import CompileResult, ExecuteResult
 
-from typing import Optional
+from typing import Optional, Tuple
 
 
 def compile_run_cpp(
-        program: CppProgram, program_input: Optional[str] = None):
+        program: CppProgram, program_input: Optional[str] = None
+        ) -> Tuple[Optional[CompileResult], Optional[ExecuteResult]]:
     """Compiles and runs a cpp program and returns the result.
 
     args:
@@ -47,4 +49,16 @@ def compile_run_cpp(
         command, capture_output=True, text=True
     )
     result = json.loads(proc_status.stdout)
-    print(result)
+    #print(proc_status.stdout)
+    compile_result = execute_result = None
+    if result:
+        compile_result = CompileResult(
+            None, result["compile"]["stdout"], result["compile"]["stderr"],
+            result["compile"]["return_code"]
+        )
+        if result["execute"] is not None:
+            execute_result = ExecuteResult(
+                result["execute"]["stdout"], result["execute"]["stderr"],
+                result["execute"]["return_code"]
+            )
+    return (compile_result, execute_result)
