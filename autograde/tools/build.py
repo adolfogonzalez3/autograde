@@ -34,6 +34,7 @@ def create_scons(program: Program, target_dir: PathLike) -> Tuple[Path, Path]:
         build_info["executable_path"] = str(executable_path.with_suffix('.exe'))
     with build_info_file.open("wt") as bf:
         json.dump(build_info, bf)
+    print(sconstruct_template, sconstruct_template.exists())
     shutil.copy(sconstruct_template, target_dir / sconstruct_template.name)
     return sconstruct_template, build_info_file
 
