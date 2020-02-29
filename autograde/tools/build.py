@@ -37,6 +37,7 @@ def create_scons(program: Program, target_dir: PathLike) -> Tuple[Path, Path]:
         "source_files": dependencies, "executable": None,
         "entry_point": None
     }
+    print(build_info)
     if program.entry_point is not None:
         absolute_path = program.entry_point.path.resolve()
         executable_path = (target_dir / absolute_path.name).with_suffix('.exe')

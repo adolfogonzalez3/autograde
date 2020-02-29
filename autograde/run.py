@@ -29,8 +29,8 @@ def main():
         program.collect_source()
         program.set_entry_point()
         print("Entry Point: ", program.entry_point)
-        #compile_run_cpp(program)
-        #continue
+        compile_run_cpp(program)
+        continue
         clean_cpp(student_path)
         compile_result = compile_cpp(program, student_path)
         print("STDOUT")
