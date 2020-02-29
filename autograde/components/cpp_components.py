@@ -16,10 +16,11 @@ def get_functions(source_code: str) -> List[Tuple[str, str, Tuple[str, ...]]]:
         A list of functions extracted from the source code.
     """
     function_pattern = re.compile(
-        r'([a-z|A-Z|0-9|_|<|>|\*]+?)\s+?'  # Represents the return type
-        r'(\w+?)\s*'  # Represents the function name
-        r'\(\s*(.*?)\s*\)'  # represents the function arguments
-        r'\s*?{.*?}',  # Represents the body of the function
+        # Represents the return type
+        r'([a-z|A-Z][a-z|A-Z|0-9|_|<|>|\*]+?)\s+'  
+        r'([a-z|A-Z][a-z|A-Z|0-9|_]*?)\s*'  # Represents the function name
+        r'\((.*?)\)'  # represents the function arguments
+        r'\s*{.*?}',  # Represents the body of the function
         flags=re.DOTALL
     )
     functions = []

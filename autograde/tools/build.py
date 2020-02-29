@@ -25,8 +25,14 @@ def create_scons(program: Program, target_dir: PathLike) -> Tuple[Path, Path]:
     other_sources = program.source_files - {program.entry_point}
     dependencies = []
     if program.entry_point is not None:
-        dependencies.append(str(program.entry_point.path.resolve()))
-    dependencies.extend([str(sf.path.resolve()) for sf in other_sources])
+        dependencies.append((
+            str(target_dir / program.entry_point.path.stem),
+            str(program.entry_point.path.resolve())
+        ))
+    dependencies.extend([
+        (str(target_dir / sf.path.stem), str(sf.path.resolve()))
+        for sf in other_sources
+    ])
     build_info = {
         "source_files": dependencies, "executable": None,
         "entry_point": None

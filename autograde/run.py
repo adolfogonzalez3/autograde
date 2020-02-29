@@ -3,7 +3,7 @@ import argparse
 from pathlib import Path
 
 from autograde import CppProgram
-from autograde.tools import compile_cpp, execute_program
+from autograde.tools import compile_cpp, execute_program, clean_cpp
 from autograde.tools.container import compile_run_cpp
 
 
@@ -24,16 +24,20 @@ def main():
     assignment_path = args.path_to_assn
     student_paths = sorted(assignment_path.iterdir())
     for student_path in student_paths:
+        print(student_path)
         program = CppProgram(student_path)
         program.collect_source()
         program.set_entry_point()
+        print("Entry Point: ", program.entry_point)
         #compile_run_cpp(program)
         #continue
+        clean_cpp(student_path)
         compile_result = compile_cpp(program, student_path)
         print("STDOUT")
         print(compile_result.stdout)
         print("STDERR")
         print(compile_result.stderr)
+        print(compile_result.executable)
         if compile_result.executable is not None:
             print("Executing...")
             execute_result = execute_program(
@@ -45,6 +49,8 @@ def main():
             print(execute_result.stderr)
         else:
             print("Error")
+        for source_file in program.source_files:
+            print(source_file.functions)
         print("Header")
         print('*'*80)
     print("-"*80)
