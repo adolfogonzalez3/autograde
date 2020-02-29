@@ -24,6 +24,6 @@ setup(
     keywords="",
     license="",
     package_data={
-        "templates": ["SConstruct"]
+        "autograde": ["templates/*"]
     }
 )
