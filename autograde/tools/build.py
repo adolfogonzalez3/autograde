@@ -30,8 +30,9 @@ def create_scons(program: Program, target_dir: PathLike) -> Path:
         ))
         if program.entry_point is not None:
             absolute_path = program.entry_point.path.resolve()
+            executable_path = target_dir / absolute_path.name
             construct.write(
-                f"Program(r'{absolute_path.with_suffix('.exe')}',"
+                f"Program(r'{executable_path.with_suffix('.exe')}',"
                 f"[r'{str(absolute_path)}', {dependencies}])"
             )
     return construct_path
