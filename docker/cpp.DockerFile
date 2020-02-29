@@ -5,6 +5,7 @@ from alpine
 ENV test "#! \/usr\/bin\/env python3"
 RUN apk add g++ python3 git
 RUN pip3 install scons
+RUN echo 1
 RUN pip3 install git+https://github.com/adolfogonzalez3/autograde.git
 RUN sed -i "1s/.*/$test/g" /usr/bin/scons
 RUN mkdir /build/
