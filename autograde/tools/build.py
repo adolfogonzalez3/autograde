@@ -23,7 +23,10 @@ def create_scons(program: Program, target_dir: PathLike) -> Path:
             f"r'{sf.path.resolve()}'" for sf in other_sources
         )
         construct.write("\n".join(
-            f"Object(r'{sf.path.resolve()}')" for sf in other_sources
+            "Object("
+            f"target = r'{target_dir / sf.path.name}'"
+            f"source = r'{sf.path.resolve()}')"
+            for sf in other_sources
         ))
         if program.entry_point is not None:
             absolute_path = program.entry_point.path.resolve()
