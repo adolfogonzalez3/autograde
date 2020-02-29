@@ -27,8 +27,8 @@ def main():
         program = CppProgram(student_path)
         program.collect_source()
         program.set_entry_point()
-        compile_run_cpp(program)
-        continue
+        #compile_run_cpp(program)
+        #continue
         compile_result = compile_cpp(program, student_path)
         print("STDOUT")
         print(compile_result.stdout)
@@ -45,12 +45,6 @@ def main():
             print(execute_result.stderr)
         else:
             print("Error")
-            stdout = compile_result.stdout.split("\n", maxsplit=5)
-            stdout = "\n".join(stdout[:5])
-            stderr = compile_result.stderr.split("\n", maxsplit=5)
-            stderr = "\n".join(stderr[:5])
-            print(stdout)
-            print(stderr)
         print("Header")
         print('*'*80)
     print("-"*80)

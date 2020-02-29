@@ -1,17 +1,15 @@
 
 import json
+from itertools import chain
 from pathlib import Path
 
 with open("build_info.json", "rt") as jf:
     build_info = json.load(jf)
 
 
-object_files = [
-    Object(target=Path(source_file).name, source=source_file)
-    for source_file in build_info["source_files"]
-]
+object_files = list(chain.from_iterable([
+    Object(source_file) for source_file in build_info["source_files"]
+]))
 
-print(object_files)
-
-Program(build_info["executable_path"], object_files)
+Program(build_info["executable"], build_info["source_files"])
 

@@ -23,20 +23,21 @@ def create_scons(program: Program, target_dir: PathLike) -> Tuple[Path, Path]:
     target_dir = Path(target_dir)
     build_info_file = target_dir / 'build_info.json'
     other_sources = program.source_files - {program.entry_point}
-    dependencies = [sf.path.resolve() for sf in other_sources]
+    dependencies = []
+    if program.entry_point is not None:
+        dependencies.append(str(program.entry_point.path.resolve()))
+    dependencies.extend([str(sf.path.resolve()) for sf in other_sources])
     build_info = {
-        "source_files": dependencies,
-        "executable_path": None
+        "source_files": dependencies, "executable": None,
+        "entry_point": None
     }
     if program.entry_point is not None:
         absolute_path = program.entry_point.path.resolve()
-        executable_path = target_dir / absolute_path.name
+        executable_path = (target_dir / absolute_path.name).with_suffix('.exe')
         build_info["entry_point"] = str(absolute_path)
-        build_info["executable_path"] = str(executable_path.with_suffix('.exe'))
+        build_info["executable"] = str(executable_path)
     with build_info_file.open("wt") as bf:
         json.dump(build_info, bf)
-    print(build_info)
-    print(sconstruct_template, sconstruct_template.exists())
     shutil.copy(sconstruct_template, target_dir / sconstruct_template.name)
     return sconstruct_template, build_info_file
 
