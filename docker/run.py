@@ -29,6 +29,7 @@ def main():
     print(compile_result.stdout)
     print("STDERR")
     print(compile_result.stderr)
+    print(compile_result)
     if compile_result.executable is not None:
         print("Executing...")
         execute_result = execute_program(

@@ -8,6 +8,7 @@ RUN pip3 install scons
 RUN pip3 install git+https://github.com/adolfogonzalez3/autograde.git
 RUN sed -i "1s/.*/$test/g" /usr/bin/scons
 RUN mkdir /build/
+WORKDIR /home/
 COPY run.py .
 
 ENTRYPOINT ["/usr/bin/python3", "run.py"]
