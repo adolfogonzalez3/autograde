@@ -49,9 +49,10 @@ def compile_run_cpp(
         command, capture_output=True, text=True
     )
     print(proc_status.stdout)
-    result = json.loads(proc_status.stdout)
-    compile_result = execute_result = None
-    if result:
+    result = compile_result = execute_result = None
+    if proc_status.stdout:
+        result = json.loads(proc_status.stdout)
+    if result is not None:
         compile_result = CompileResult(
             None, result["compile"]["stdout"], result["compile"]["stderr"],
             result["compile"]["return_code"]
