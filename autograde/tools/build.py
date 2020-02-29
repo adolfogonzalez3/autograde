@@ -58,7 +58,7 @@ def compile_cpp(
     target_path = Path(target_path).resolve()
     executable: Optional[Path] = None
     if program.entry_point is not None:
-        executable = target_path / program.entry_point.path.resolve()
+        executable = target_path / program.entry_point.path.name
         executable = executable.with_suffix(".exe")
     create_scons(program, target_path)
     proc_status = subprocess.run(
