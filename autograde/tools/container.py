@@ -48,7 +48,6 @@ def compile_run_cpp(
     proc_status = subprocess.run(
         command, capture_output=True, text=True
     )
-    print(proc_status.stdout)
     result = compile_result = execute_result = None
     if proc_status.stdout:
         result = json.loads(proc_status.stdout)
