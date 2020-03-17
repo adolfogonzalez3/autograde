@@ -84,12 +84,13 @@ class Program(object):
 
     def collect_source(self):
         """Collect all source files from build paths. """
+        new_build_paths = set()
         for build_path in self.build_paths:
             for ext in self.get_extensions():
-                self.source_files.update(
-                    self.source_type(path)
-                    for path in build_path.rglob(f'*{ext}')
-                )
+                for path in build_path.rglob(f"*{ext}"):
+                    new_build_paths.add(path.parent)
+                    self.source_files.add(self.source_type(path))
+        self.build_paths.update(new_build_paths)
 
     def __repr__(self):
         """Return a string representation of the program."""

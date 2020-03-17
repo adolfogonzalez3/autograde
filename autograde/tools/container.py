@@ -22,7 +22,7 @@ def compile_run_cpp(
         compiling and running steps of the program.
     """
     if program.entry_point is None:
-        return None
+        return (None, None)
     entry_path = program.entry_point.path
     build_path_map = {
         build_path: f"/build/build_{i}"
