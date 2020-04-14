@@ -8,7 +8,7 @@ Autograde can discover source files automatically using the method collect_sourc
 Autograde can use the docker installation on your computer to run the compiling and running steps in a containerized environment. The advantages of this include:
 * Faster build times (from what I've seen on my work machine)
 * No leftover build files
-* More secure (Docker has improved its security so far, preventing escalation within the container)
+* More secure (Docker has been improving its security so far, reducing the risk of escalation within the container)
 
 Install autograde using
 ```bash

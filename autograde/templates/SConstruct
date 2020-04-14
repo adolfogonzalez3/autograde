@@ -12,7 +12,7 @@ object_files = list(chain.from_iterable([
     for target_obj, source_file in build_info["source_files"]
 ]))
 
-print([(Path(a[0]).name, Path(a[1]).name) for a in build_info["source_files"]])
+#print([(Path(a[0]).name, Path(a[1]).name) for a in build_info["source_files"]])
 
 Program(build_info["executable"], object_files)
 
